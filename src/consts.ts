@@ -19,8 +19,8 @@ export const SITE = {
   // 图片下载至 public/images/,源自 upload-static.hoyoverse.com
   // 用于首页 Hero 轮播(居中 contain 展示,不裁切)
   heroImages: [
-    '/images/fuxuan-3.jpg',
-    '/images/fuxuan-4.jpg',
+    '/images/fuxuan-3.webp',
+    '/images/fuxuan-4.webp',
     '/images/HoYoWiki-image.jpg',
     '/images/HoYoWiki-image.png',
     '/images/HoYoWiki-image (2).png',
@@ -29,7 +29,7 @@ export const SITE = {
   characterPV: {
     bvid: 'BV1R94y1W7pL',
     title: '《崩坏:星穹铁道》符玄角色PV——「法眼无遗」',
-    cover: '/images/fuxuan-emblem.jpg',
+    cover: '/images/fuxuan-emblem.webp',
   },
   postHeroImages: [
     '/images/fuxuan-portrait.png',
