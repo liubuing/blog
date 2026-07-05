@@ -21,11 +21,8 @@ export const SITE = {
   heroImages: [
     '/images/fuxuan-3.png',
     '/images/fuxuan-4.png',
-    '/images/fuxuan-5.jpg',
-    '/images/fuxuan-6.jpg',
     '/images/HoYoWiki-image.jpg',
     '/images/HoYoWiki-image.png',
-    '/images/HoYoWiki-image (2).jpg',
     '/images/HoYoWiki-image (2).png',
   ],
   // 符玄角色PV「法眼无遗」(B站官方)
