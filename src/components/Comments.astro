@@ -1,0 +1,32 @@
+---
+import { GISCUS } from '@/consts';
+---
+{GISCUS.enabled && GISCUS.repoId && GISCUS.categoryId ? (
+  <section class="mt-16" aria-label="评论">
+    <h2 class="mb-6 flex items-center gap-2 font-serif text-xl font-bold">
+      <span class="h-5 w-1 rounded bg-accent"></span> 评论
+    </h2>
+    <div class="comments-content">
+      <script
+        src="https://giscus.app/client.js"
+        data-repo={GISCUS.repo}
+        data-repo-id={GISCUS.repoId}
+        data-category={GISCUS.category}
+        data-category-id={GISCUS.categoryId}
+        data-mapping={GISCUS.mapping}
+        data-strict="0"
+        data-reactions-enabled={GISCUS.reactionsEnabled}
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme={GISCUS.theme}
+        data-lang={GISCUS.lang}
+        crossorigin="anonymous"
+        async
+      ></script>
+    </div>
+  </section>
+) : (
+  <section class="mt-16 rounded-2xl border border-dashed border-black/10 p-6 text-center text-sm text-ink-light/50 dark:border-white/10 dark:text-ink-dark/50">
+    💬 评论系统未配置。请在 <code class="rounded bg-black/5 px-1.5 py-0.5 dark:bg-white/10">src/consts.ts</code> 的 <code class="rounded bg-black/5 px-1.5 py-0.5 dark:bg-white/10">GISCUS</code> 中填入 repo / repoId / categoryId 即可开启 Giscus 评论。
+  </section>
+)}

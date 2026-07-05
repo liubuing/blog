@@ -1,0 +1,103 @@
+---
+import Icon from './Icon.astro';
+---
+<button id="search-trigger-mobile" class="hidden" aria-hidden="true"></button>
+<div id="search-modal" class="fixed inset-0 z-[70] hidden">
+  <div id="search-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+  <div class="absolute inset-x-0 top-[10vh] mx-auto w-full max-w-2xl px-4">
+    <div class="overflow-hidden rounded-2xl border border-black/10 bg-canvas-card shadow-2xl transition-all duration-300 dark:border-white/10 dark:bg-canvas-dark-card" id="search-panel">
+      <div class="flex items-center gap-3 border-b border-black/5 px-4 dark:border-white/5">
+        <span class="text-ink-light/40 dark:text-ink-dark/40"><Icon name="search" size={20} /></span>
+        <input id="search-input" type="text" placeholder="搜索文章..." autocomplete="off" class="w-full bg-transparent py-4 text-base outline-none placeholder:text-ink-light/40 dark:placeholder:text-ink-dark/40" />
+        <kbd class="hidden rounded border border-black/10 px-2 py-0.5 text-xs text-ink-light/50 dark:border-white/10 dark:text-ink-dark/50 sm:block">ESC</kbd>
+      </div>
+      <div id="search-results" class="max-h-[60vh] overflow-y-auto p-2"></div>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+
+<style>
+  #search-results:empty::after {
+    content: '输入关键词开始搜索...';
+    display: block;
+    padding: 2rem;
+    text-align: center;
+    color: var(--ink-muted, #9ca3af);
+    font-size: 0.875rem;
+  }
+  :global(#search-results .pagefind-ui__result) {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  :global(#search-results .pagefind-ui__result:hover) {
+    background: rgba(119, 182, 255, 0.1);
+  }
+  :global(#search-results .pagefind-ui__result-title) {
+    font-weight: 600;
+    color: var(--pagefind-ui-text);
+  }
+  :global(#search-results .pagefind-ui__result-excerpt) {
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+</style>
+
+<script>
+  const modal = document.getElementById('search-modal');
+  const backdrop = document.getElementById('search-backdrop');
+  const panel = document.getElementById('search-panel');
+  const input = document.getElementById('search-input') as HTMLInputElement | null;
+  const results = document.getElementById('search-results');
+  let ui: any = null;
+  let loaded = false;
+
+  async function loadPagefind() {
+    if (loaded) return;
+    // pagefind is generated at build time; hide the import from Vite's static analyzer
+    const _import = new Function('s', 'return import(s)');
+    const mod = await _import('/pagefind/pagefind-ui.js');
+    const { PagefindUI } = mod;
+    ui = new PagefindUI({
+      element: '#search-results',
+      showImages: false,
+      translations: { placeholder: '搜索文章...' },
+    });
+    loaded = true;
+  }
+
+  function open() {
+    modal?.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      backdrop?.classList.remove('opacity-0');
+      panel?.classList.remove('translate-y-2', 'opacity-0');
+      panel?.classList.add('translate-y-0', 'opacity-100');
+      input?.focus();
+    });
+    loadPagefind();
+  }
+  function close() {
+    backdrop?.classList.add('opacity-0');
+    panel?.classList.add('translate-y-2', 'opacity-0');
+    panel?.classList.remove('translate-y-0', 'opacity-100');
+    setTimeout(() => modal?.classList.add('hidden'), 200);
+  }
+
+  document.getElementById('search-trigger')?.addEventListener('click', open);
+  document.getElementById('search-trigger-mobile')?.addEventListener('click', open);
+  backdrop?.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      modal?.classList.contains('hidden') ? open() : close();
+    }
+  });
+
+  input?.addEventListener('input', () => {
+    if (ui && input.value) ui.triggerSearch(input.value);
+  });
+</script>

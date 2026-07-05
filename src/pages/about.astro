@@ -1,0 +1,80 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE, SOCIAL_LINKS } from '@/consts';
+import Icon from '@/components/Icon.astro';
+const year = new Date().getFullYear();
+const age = year - SITE.startYear;
+---
+<BaseLayout title="关于" description="关于琉卜与这颗大脑">
+  <span id="top" class="block h-16"></span>
+  <div class="container-prose py-12">
+    <article class="prose-article mx-auto max-w-3xl">
+      <h1>关于这颗大脑</h1>
+
+      <p>
+        你好,我是 <strong>琉卜</strong>。一个游走在 <strong>生物</strong> 与 <strong>计算机</strong> 之间的从业者——
+        白天和细胞、基因、实验数据打交道,夜晚把生命系统的逻辑翻译成代码。
+        这座 <strong>{SITE.title}</strong>,就是我存放这些思考的地方。
+      </p>
+
+      <blockquote>
+        <p>「{SITE.heroMotto}。」</p>
+      </blockquote>
+
+      <h2>这句箴言意味着什么</h2>
+      <p>
+        生命有两种延续自身的方式。<strong>无性繁殖</strong>是同一性的纯粹复制——
+        一个细胞分裂为二,基因信息精准拷贝,在不需要他者的情况下完成自我存续。
+        它的美是 <em>自足</em> 的、<em>闭合</em> 的、<em>数学般确定</em> 的。
+      </p>
+      <p>
+        而 <strong>有性生殖</strong>则引入了差异——两个个体的基因在减数分裂与受精中重组,
+        诞生从未存在过的新组合。它的美是 <em>开放</em> 的、<em>涌现</em> 的、<em>不可完全预测</em> 的。
+        没有无性繁殖在底层维系生命之持续,便不会有有性生殖展开的差异之花;反之,
+        没有有性生殖带来的多样性,生命也难以应对变化的世界。
+      </p>
+      <p>
+        我把这句话作为这座博客的哲学锚点,是因为它恰好描摹了我所从事的交叉领域的本质:
+        <strong>计算机是生命"无性之美"的极致表达</strong>——比特精准复制、算法确定性执行、
+        程序在硅基上完美克隆自身;而 <strong>生物则是"有性之美"的原型</strong>——
+        噪声、变异、重组、选择,在不确定中涌现出无穷的形式。
+        用前者去建模、理解、甚至模拟后者,正是我每日所做之事,也是这座博客想要记录的。
+      </p>
+
+      <h2>这里会写些什么</h2>
+      <ul>
+        <li>🧬 <strong>生物信息学 / 计算生物学</strong>:序列分析、组学数据、进化模型</li>
+        <li>🤖 <strong>AI × 生命科学</strong>:蛋白质结构、基因调控、单细胞智能分析</li>
+        <li>💻 <strong>工程实践</strong>:Python / Rust / 算法 / 可复现科研工作流</li>
+        <li>🔬 <strong>实验与思考</strong>:湿实验与干实验的对话、科研方法论</li>
+        <li>🌿 <strong>生命的哲学</strong>:在确定与随机之间,关于"活着"的随笔</li>
+      </ul>
+
+      <h2>站点信息</h2>
+      <ul>
+        <li>站点名称:{SITE.title}</li>
+        <li>开张时间:{SITE.startYear} 年(已运行 {age} 年)</li>
+        <li>技术栈:Astro + MDX + Tailwind CSS + Pagefind + Giscus</li>
+        <li>视觉灵感:Hexo LiveForCode 主题 + DNA 双螺旋意象</li>
+      </ul>
+
+      <h2>联系琉卜</h2>
+      <p>如果你也在生物与计算的交界处工作,或对这里写的东西有话想说,欢迎来信。</p>
+      <div class="not-prose flex flex-wrap gap-3">
+        {SOCIAL_LINKS.filter((s) => s.href).map((s) => (
+          <a href={s.href} target="_blank" rel="noopener noreferrer" class="btn-ghost border border-black/10 dark:border-white/10">
+            <Icon name={s.icon} size={18} /> {s.name}
+          </a>
+        ))}
+        <a href={`mailto:${SITE.email}`} class="btn-ghost border border-black/10 dark:border-white/10">
+          <Icon name="mail" size={18} /> {SITE.email}
+        </a>
+      </div>
+
+      <hr />
+      <p class="text-sm italic text-ink-light/50 dark:text-ink-dark/50">
+        愿这颗大脑里的电信号,能越过突触,与你的某条神经共振。
+      </p>
+    </article>
+  </div>
+</BaseLayout>

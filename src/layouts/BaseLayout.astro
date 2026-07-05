@@ -1,0 +1,55 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ProgressBar from '../components/ProgressBar.astro';
+import Icon from '../components/Icon.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  hideHeader?: boolean;
+}
+const { title, description, image, hideHeader = false } = Astro.props;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <BaseHead title={title} description={description} image={image} />
+  </head>
+  <body class="min-h-screen">
+    <ProgressBar />
+    {!hideHeader && <Header />}
+
+    <main>
+      <slot />
+    </main>
+
+    <Footer />
+
+    <a
+      href="#top"
+      id="back-to-top"
+      class="fixed bottom-6 left-6 z-40 hidden h-12 w-12 place-items-center rounded-full border border-black/10 bg-canvas-card/80 shadow-lg backdrop-blur transition-all hover:bg-accent hover:text-white dark:border-white/10 dark:bg-canvas-dark-card/80"
+      aria-label="回到顶部"
+    >
+      <Icon name="arrow-up" size={20} />
+    </a>
+
+    <script>
+      const btn = document.getElementById('back-to-top');
+      const onScroll = () => {
+        if (!btn) return;
+        if (window.scrollY > 400) {
+          btn.classList.remove('hidden');
+          btn.classList.add('grid', 'animate-fade-in');
+        } else {
+          btn.classList.add('hidden');
+          btn.classList.remove('grid', 'animate-fade-in');
+        }
+      };
+      document.addEventListener('scroll', onScroll, { passive: true });
+    </script>
+  </body>
+</html>

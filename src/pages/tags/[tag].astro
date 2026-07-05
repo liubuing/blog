@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { getAllPosts } from '@/utils';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const tags = new Map<string, typeof posts>();
+  for (const post of posts) {
+    for (const tag of post.data.tags ?? []) {
+      if (!tags.has(tag)) tags.set(tag, []);
+      tags.get(tag)!.push(post);
+    }
+  }
+  return [...tags.entries()].map(([tag, list]) => ({
+    params: { tag },
+    props: { tag, posts: list },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+---
+<BaseLayout title={`#${tag}`} subtitle={`标签下共 ${posts.length} 篇文章`}>
+  <div class="container-prose py-12">
+    <a href="/tags/" class="btn-ghost mb-8 text-sm">← 返回所有标签</a>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </div>
+</BaseLayout>

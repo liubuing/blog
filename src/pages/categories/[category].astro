@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { getAllPosts } from '@/utils';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const cats = new Map<string, typeof posts>();
+  for (const post of posts) {
+    const c = post.data.category ?? '未分类';
+    if (!cats.has(c)) cats.set(c, []);
+    cats.get(c)!.push(post);
+  }
+  return [...cats.entries()].map(([category, list]) => ({
+    params: { category },
+    props: { category, posts: list },
+  }));
+}
+
+const { category, posts } = Astro.props;
+---
+<BaseLayout title={category} subtitle={`分类下共 ${posts.length} 篇文章`}>
+  <div class="container-prose py-12">
+    <a href="/categories/" class="btn-ghost mb-8 text-sm">← 返回所有分类</a>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </div>
+</BaseLayout>

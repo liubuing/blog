@@ -1,0 +1,89 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TOC from '../components/TOC.astro';
+import Comments from '../components/Comments.astro';
+import Icon from '../components/Icon.astro';
+import { SITE } from '@/consts';
+import { formatDate, getReadingTime } from '@/utils';
+import type { Post } from '@/utils';
+
+export interface Props {
+  post: Post;
+  headings?: { depth: number; slug: string; text: string }[];
+  prev?: { id: string; title: string };
+  next?: { id: string; title: string };
+}
+const { post, headings = [], prev, next } = Astro.props;
+const { title, description, pubDate, updatedDate, category, tags, cover } = post.data;
+const minutes = getReadingTime(post.body ?? '');
+const hero = cover ?? SITE.postHeroImages[0];
+const isFullChar = !cover || cover.includes('fuxuan') || cover.includes('HoYoWiki');
+---
+<BaseLayout title={title} description={description} image={hero}>
+  <span id="top"></span>
+  <article>
+    <!-- Hero header -->
+    <header class="relative flex h-[58vh] min-h-[380px] items-end overflow-hidden">
+      <div class="absolute inset-0" style="background: radial-gradient(ellipse 80% 60% at 50% 25%, rgba(255,200,220,0.3), transparent 60%), radial-gradient(ellipse 60% 50% at 80% 70%, rgba(180,200,255,0.28), transparent 60%), linear-gradient(135deg, #2a1b3d 0%, #3d2a5c 40%, #4a2a55 70%, #2a1b3d 100%);"></div>
+      {isFullChar ? (
+        <img src={hero} alt={title} class="absolute inset-0 h-full w-full object-contain p-6 opacity-90 drop-shadow-[0_8px_40px_rgba(0,0,0,0.4)]" />
+      ) : (
+        <div class="absolute inset-0 bg-cover bg-center" style={`background-image:url('${hero}')`}></div>
+      )}
+      <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#2a1b3d]/80 via-[#2a1b3d]/30 to-transparent"></div>
+      <div class="container-prose relative z-10 pb-12 text-white">
+        <a href={`/categories/${category}/`} class="mb-4 inline-block rounded-full bg-pink-200/20 px-3 py-1 text-xs font-medium text-pink-100 backdrop-blur">{category}</a>
+        <h1 class="max-w-3xl text-4xl font-bold font-serif drop-shadow-[0_2px_12px_rgba(255,122,171,0.4)] sm:text-5xl">{title}</h1>
+        <div class="mt-4 flex flex-wrap items-center gap-4 text-sm text-white/80">
+          <span class="flex items-center gap-1.5"><Icon name="calendar" size={15} />{formatDate(pubDate)}</span>
+          <span class="flex items-center gap-1.5"><Icon name="clock" size={15} />约 {minutes} 分钟</span>
+          {updatedDate && (
+            <span class="flex items-center gap-1.5"><Icon name="edit" size={15} />更新于 {formatDate(updatedDate)}</span>
+          )}
+        </div>
+      </div>
+    </header>
+
+    <!-- Body + TOC -->
+    <div class="container-prose mt-12">
+      <div class="flex gap-10">
+        <div class="min-w-0 flex-1">
+          <div class="prose-article">
+            <slot />
+          </div>
+
+          <!-- Tags -->
+          {tags.length > 0 && (
+            <div class="mt-10 flex flex-wrap items-center gap-2 border-t border-black/5 pt-6 dark:border-white/5">
+              <Icon name="tag" size={16} class="text-ink-light/40 dark:text-ink-dark/40" />
+              {tags.map((t) => (
+                <a href={`/tags/${t}/`} class="tag-chip">#{t}</a>
+              ))}
+            </div>
+          )}
+
+          <!-- Prev / Next -->
+          <nav class="mt-10 grid gap-4 sm:grid-cols-2">
+            {prev ? (
+              <a href={`/blog/${prev.id}/`} class="card p-4 transition-transform hover:-translate-y-1">
+                <span class="flex items-center gap-1 text-xs text-ink-light/40 dark:text-ink-dark/40"><Icon name="chevron-left" size={14} />上一篇</span>
+                <p class="mt-1 line-clamp-1 font-medium">{prev.title}</p>
+              </a>
+            ) : <span></span>}
+            {next ? (
+              <a href={`/blog/${next.id}/`} class="card p-4 text-right transition-transform hover:-translate-y-1">
+                <span class="flex items-center justify-end gap-1 text-xs text-ink-light/40 dark:text-ink-dark/40">下一篇<Icon name="chevron-right" size={14} /></span>
+                <p class="mt-1 line-clamp-1 font-medium">{next.title}</p>
+              </a>
+            ) : <span></span>}
+          </nav>
+
+          <Comments />
+        </div>
+        <div class="hidden w-56 shrink-0 xl:block">
+          <TOC headings={headings} />
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

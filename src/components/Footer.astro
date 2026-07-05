@@ -1,0 +1,24 @@
+---
+import { SITE, SOCIAL_LINKS } from '@/consts';
+import Icon from './Icon.astro';
+const year = new Date().getFullYear();
+const footer = SITE.footerText.replace('{year}', String(year));
+const startYear = SITE.startYear;
+---
+<footer class="mt-24 border-t border-black/5 py-10 text-center text-sm text-ink-light/50 dark:border-white/5 dark:text-ink-dark/50">
+  <div class="container-prose flex flex-col items-center gap-4">
+    <div class="flex items-center gap-3">
+      {SOCIAL_LINKS.filter((s) => s.href).map((s) => (
+        <a href={s.href} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-accent" aria-label={s.name}>
+          <Icon name={s.icon} size={18} />
+        </a>
+      ))}
+    </div>
+    <p class="leading-relaxed">
+      <span class="face">ღゝ◡╹)ノ♡</span>
+      <span class="mx-2">|</span>
+      <span>© {startYear}-{year} {SITE.author}.保留所有权利。</span>
+    </p>
+    <p class="text-xs">由 <a href="https://astro.build" class="hover:text-accent" target="_blank" rel="noopener">Astro</a> 强力驱动 · 为生活、编码与写作而构建。</p>
+  </div>
+</footer>

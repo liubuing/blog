@@ -1,0 +1,42 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getAllPosts, groupByYear, formatDateShort } from '@/utils';
+import Icon from '@/components/Icon.astro';
+
+const posts = await getAllPosts();
+const grouped = groupByYear(posts);
+const total = posts.length;
+---
+<BaseLayout title="归档" subtitle={`共 ${total} 篇文章 · 始于 ${posts[posts.length - 1]?.data.pubDate.getFullYear() ?? '-'}`}>
+  <div class="container-prose py-12">
+    <div class="mb-10 text-center">
+      <h1 class="flex items-center justify-center gap-2 text-4xl font-bold font-serif">
+        <Icon name="archive" size={28} class="text-accent" /> 归档
+      </h1>
+      <div class="mx-auto mt-4 h-1 w-16 rounded-full bg-accent"></div>
+    </div>
+
+    <div class="mx-auto max-w-3xl">
+      {[...grouped.entries()].map(([year, list]) => (
+        <section class="mb-12">
+          <h2 class="mb-4 flex items-baseline gap-3">
+            <span class="font-serif text-3xl font-bold text-accent">{year}</span>
+            <span class="text-sm text-ink-light/40 dark:text-ink-dark/40">{list.length} 篇</span>
+            <span class="ml-2 h-px flex-1 bg-black/5 dark:bg-white/5"></span>
+          </h2>
+          <ul class="space-y-1">
+            {list.map((post) => (
+              <li>
+                <a href={`/blog/${post.id}/`} class="group flex items-center gap-4 rounded-xl px-3 py-2.5 transition-colors hover:bg-accent/5">
+                  <time class="shrink-0 text-sm tabular-nums text-ink-light/40 dark:text-ink-dark/40">{formatDateShort(post.data.pubDate)}</time>
+                  <span class="min-w-0 flex-1 truncate font-medium transition-colors group-hover:text-accent">{post.data.title}</span>
+                  <span class="hidden shrink-0 text-xs text-ink-light/40 dark:text-ink-dark/40 sm:inline">{post.data.category}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

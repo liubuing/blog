@@ -1,0 +1,26 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+---
+<BaseLayout title="404 - 页面走丢了" hideHeader={false}>
+  <section class="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
+    <p class="font-serif text-[8rem] font-bold leading-none text-accent/20">404</p>
+    <h1 class="mt-4 font-serif text-3xl font-bold">PAGE NOT FOUND</h1>
+    <p class="mt-3 text-ink-light/60 dark:text-ink-dark/60">很抱歉,您访问的页面不存在。</p>
+    <p class="text-sm text-ink-light/40 dark:text-ink-dark/40">可能是输入地址有误或该地址已变更。</p>
+    <div class="mt-8 flex gap-3">
+      <a href="/" class="btn-primary">
+        <Icon name="home" size={18} /> 返回首页
+      </a>
+      <button id="search-404" class="btn-ghost border border-black/10 dark:border-white/10">
+        <Icon name="search" size={18} /> 搜索一下
+      </button>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  document.getElementById('search-404')?.addEventListener('click', () => {
+    document.getElementById('search-trigger')?.click();
+  });
+</script>

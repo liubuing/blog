@@ -1,0 +1,32 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getAllPosts, getAllCategories } from '@/utils';
+import Icon from '@/components/Icon.astro';
+
+const posts = await getAllPosts();
+const categories = getAllCategories(posts);
+---
+<BaseLayout title="分类" subtitle={`共 ${categories.length} 个分类`}>
+  <div class="container-prose py-12">
+    <div class="mb-10 text-center">
+      <h1 class="flex items-center justify-center gap-2 text-4xl font-bold font-serif">
+        <Icon name="folder" size={28} class="text-accent" /> 分类
+      </h1>
+      <div class="mx-auto mt-4 h-1 w-16 rounded-full bg-accent"></div>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {categories.map(({ category, count }) => (
+        <a href={`/categories/${category}/`} class="card flex items-center gap-4 p-5">
+          <span class="grid h-12 w-12 place-items-center rounded-xl bg-accent/15 text-accent">
+            <Icon name="folder" size={22} />
+          </span>
+          <div>
+            <p class="font-serif text-lg font-bold">{category}</p>
+            <p class="text-sm text-ink-light/50 dark:text-ink-dark/50">{count} 篇文章</p>
+          </div>
+          <Icon name="chevron-right" size={18} class="ml-auto text-ink-light/30 dark:text-ink-dark/30" />
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

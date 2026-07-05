@@ -1,0 +1,100 @@
+---
+import { NAV, SITE } from '@/consts';
+import Icon from './Icon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import Search from './Search.astro';
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+<header class="fixed inset-x-0 top-0 z-50 transition-all duration-300" id="site-header">
+  <div class="container-prose flex h-16 items-center justify-between">
+    <a href="/" class="group flex items-center gap-2 text-lg font-bold font-serif tracking-wide">
+      <span class="grid h-9 w-9 place-items-center rounded-xl bg-accent text-white shadow-md transition-transform group-hover:scale-110">
+        <span class="text-base">L</span>
+      </span>
+      <span class="hidden sm:inline">{SITE.title}</span>
+    </a>
+
+    <nav class="hidden items-center gap-1 md:flex">
+      {NAV.map((item) => (
+        <a
+          href={item.href}
+          class:list={[
+            'rounded-full px-3.5 py-1.5 text-sm font-medium transition-all',
+            isActive(item.href)
+              ? 'bg-accent/15 text-accent-dark dark:text-accent'
+              : 'text-ink-light/70 hover:bg-black/5 hover:text-ink-light dark:text-ink-dark/70 dark:hover:bg-white/5 dark:hover:text-ink-dark',
+          ]}
+        >
+          {item.name}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-1">
+      <button id="search-trigger" class="btn-ghost h-10 w-10 rounded-full" aria-label="搜索">
+        <Icon name="search" size={20} />
+      </button>
+      <ThemeToggle />
+      <button id="menu-trigger" class="btn-ghost h-10 w-10 rounded-full md:hidden" aria-label="菜单">
+        <Icon name="menu" size={22} />
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile bubble menu drawer -->
+<div id="menu-drawer" class="fixed inset-0 z-[55] hidden">
+  <div id="menu-backdrop" class="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+  <aside class="absolute right-0 top-0 h-full w-72 max-w-[80vw] translate-x-full bg-canvas-card shadow-2xl transition-transform duration-300 dark:bg-canvas-dark-card">
+    <div class="flex items-center justify-between border-b border-black/5 px-5 py-4 dark:border-white/5">
+      <span class="font-serif text-lg font-bold">导航</span>
+      <button id="menu-close" class="btn-ghost h-9 w-9 rounded-full"><Icon name="close" size={20} /></button>
+    </div>
+    <nav class="flex flex-col gap-1 p-3">
+      {NAV.map((item) => (
+        <a href={item.href} class:list={["menu-bubble-item", isActive(item.href) && "bg-accent/10 text-accent"]}>
+          <Icon name={item.icon} size={18} />
+          <span>{item.name}</span>
+        </a>
+      ))}
+    </nav>
+  </aside>
+</div>
+
+<Search />
+
+<script>
+  const header = document.getElementById('site-header');
+  const onScroll = () => {
+    if (!header) return;
+    if (window.scrollY > 20) {
+      header.classList.add('bg-canvas-card/80', 'backdrop-blur', 'shadow-sm', 'dark:bg-canvas-dark/80');
+    } else {
+      header.classList.remove('bg-canvas-card/80', 'backdrop-blur', 'shadow-sm', 'dark:bg-canvas-dark/80');
+    }
+  };
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Mobile menu drawer
+  const drawer = document.getElementById('menu-drawer');
+  const backdrop = document.getElementById('menu-backdrop');
+  const panel = drawer?.querySelector('aside');
+  const open = () => {
+    drawer?.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      backdrop?.classList.remove('opacity-0');
+      panel?.classList.remove('translate-x-full');
+    });
+  };
+  const close = () => {
+    backdrop?.classList.add('opacity-0');
+    panel?.classList.add('translate-x-full');
+    setTimeout(() => drawer?.classList.add('hidden'), 300);
+  };
+  document.getElementById('menu-trigger')?.addEventListener('click', open);
+  document.getElementById('menu-close')?.addEventListener('click', close);
+  backdrop?.addEventListener('click', close);
+</script>

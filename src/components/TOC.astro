@@ -1,0 +1,70 @@
+---
+import Icon from './Icon.astro';
+export interface TocItem {
+  depth: number;
+  slug: string;
+  text: string;
+}
+export interface Props {
+  headings: TocItem[];
+}
+const { headings } = Astro.props;
+const items = headings.filter((h) => h.depth >= 2 && h.depth <= 4);
+---
+{items.length > 0 && (
+  <nav class="toc hidden xl:block" aria-label="文章目录">
+    <div class="sticky top-24">
+      <div class="mb-3 flex items-center gap-2 text-sm font-semibold text-ink-light/70 dark:text-ink-dark/70">
+        <Icon name="toc" size={16} /> 目录
+      </div>
+      <ul class="space-y-1 border-l-2 border-black/5 text-sm dark:border-white/5" id="toc-list">
+        {items.map((h) => (
+          <li style={`padding-left:${(h.depth - 2) * 12 + 12}px`}>
+            <a
+              href={`#${h.slug}`}
+              data-toc-link={h.slug}
+              class="toc-link -ml-0.5 block border-l-2 border-transparent py-1 pl-3 text-ink-light/55 transition-all hover:border-accent hover:text-accent dark:text-ink-dark/55"
+            >
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+)}
+
+<script>
+  // Highlight current heading on scroll
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+  const map = new Map<string, HTMLAnchorElement>();
+  links.forEach((l) => map.set(l.dataset.tocLink!, l));
+
+  function setActive(id: string) {
+    links.forEach((l) => {
+      l.classList.remove('border-accent', 'text-accent', 'font-medium');
+      l.classList.add('text-ink-light/55', 'dark:text-ink-dark/55');
+    });
+    const el = map.get(id);
+    if (el) {
+      el.classList.add('border-accent', 'text-accent', 'font-medium');
+      el.classList.remove('text-ink-light/55', 'dark:text-ink-dark/55');
+    }
+  }
+
+  const headings = links
+    .map((l) => document.getElementById(l.dataset.tocLink!))
+    .filter(Boolean) as HTMLElement[];
+
+  if (headings.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      },
+      { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
+    );
+    headings.forEach((h) => observer.observe(h));
+  }
+</script>

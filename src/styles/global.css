@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-accent: #77B6FF;
+  --header-h: 0px;
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  html {
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-canvas-light text-ink-light transition-colors duration-300;
+  }
+
+  html.dark body {
+    @apply bg-canvas-dark text-ink-dark;
+  }
+
+  ::selection {
+    @apply bg-accent/30;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-gray-400/50;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400/80;
+  }
+  html.dark ::-webkit-scrollbar-thumb {
+    @apply bg-gray-600/50;
+  }
+
+  a {
+    @apply transition-colors;
+  }
+}
+
+@layer components {
+  .container-prose {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .card {
+    @apply rounded-2xl border border-black/5 bg-canvas-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-white/5 dark:bg-canvas-dark-card;
+  }
+
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-white hover:bg-accent-dark shadow-md hover:shadow-lg;
+  }
+  .btn-ghost {
+    @apply btn text-ink-light/70 hover:bg-black/5 dark:text-ink-dark/70 dark:hover:bg-white/5;
+  }
+
+  .tag-chip {
+    @apply inline-flex items-center rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent-dark transition-colors hover:bg-accent/20 dark:text-accent;
+  }
+
+  .menu-bubble-item {
+    @apply relative flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-ink-light/80 transition-all duration-200 hover:bg-accent/10 hover:text-accent dark:text-ink-dark/80;
+  }
+
+  /* article prose (markdown body) */
+  .prose-article {
+    @apply prose prose-lg dark:prose-invert max-w-none
+      prose-headings:font-serif prose-headings:scroll-mt-24
+      prose-p:leading-relaxed
+      prose-a:text-accent-dark prose-a:no-underline hover:prose-a:underline
+      prose-img:rounded-xl prose-img:shadow-lg
+      prose-code:rounded prose-code:bg-black/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none
+      dark:prose-code:bg-white/10
+      prose-pre:rounded-xl prose-pre:shadow-lg
+      prose-blockquote:border-l-accent prose-blockquote:not-italic;
+  }
+}
+
+/* Shiki dual-theme: light by default, dark when html.dark */
+.astro-code,
+.astro-code span {
+  transition: color 0.3s ease;
+}
+
+/* Reading progress bar */
+.progress-bar {
+  background: linear-gradient(90deg, #77B6FF, #4A90E2);
+}
+
+/* Animated hero gradient overlay */
+.hero-overlay {
+  background:
+    radial-gradient(ellipse at top, rgba(119, 182, 255, 0.25), transparent 55%),
+    linear-gradient(180deg, rgba(26, 26, 46, 0.25) 0%, rgba(26, 26, 46, 0.75) 100%);
+}
+
+/* Pagefind UI overrides */
+:root {
+  --pagefind-ui-primary: #4A90E2;
+  --pagefind-ui-text: #2C2C3A;
+  --pagefind-ui-background: #ffffff;
+  --pagefind-ui-border: #e5e7eb;
+  --pagefind-ui-tag: #77B6FF;
+  --pagefind-ui-border-radius: 12px;
+  --pagefind-ui-image-inline-ratio: 1.6;
+  --pagefind-ui-font: 'Noto Sans SC', system-ui, sans-serif;
+}
+html.dark {
+  --pagefind-ui-text: #E8E8F0;
+  --pagefind-ui-background: #23233B;
+  --pagefind-ui-border: #2F2F4A;
+}
+
+/* Hide Pagefind default search box; we provide our own trigger */
+#search-container .pagefind-ui__search-input {
+  background: transparent;
+}

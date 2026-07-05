@@ -1,0 +1,34 @@
+---
+// 顶部滚动进度条 + 失焦标题切换
+import { SITE } from '@/consts';
+---
+<div id="top-progress" class="fixed left-0 top-0 z-[60] h-[3px] w-0 progress-bar transition-[width] duration-150 ease-out"></div>
+
+<script>
+  const bar = document.getElementById('top-progress');
+  function updateProgress() {
+    if (!bar) return;
+    const h = document.documentElement;
+    const scrolled = h.scrollTop;
+    const max = h.scrollHeight - h.clientHeight;
+    const pct = max > 0 ? (scrolled / max) * 100 : 0;
+    bar.style.width = pct + '%';
+  }
+  document.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // Title switch on focus / blur (LiveForCode-style)
+  const blurTitle = '(◍´꒳`◍) Hi, 好奇你在看什么~';
+  const focusTitle = '(*´∇｀*) 欢迎回来!';
+  const origTitle = document.title;
+  let origTimer: number | undefined;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      setTimeout(() => { if (document.hidden) document.title = blurTitle; }, 500);
+    } else {
+      document.title = focusTitle;
+      window.clearTimeout(origTimer);
+      origTimer = window.setTimeout(() => { document.title = origTitle; }, 1500);
+    }
+  });
+</script>

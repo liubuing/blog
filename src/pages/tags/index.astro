@@ -1,0 +1,33 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getAllPosts, getAllTags } from '@/utils';
+import Icon from '@/components/Icon.astro';
+
+const posts = await getAllPosts();
+const tags = getAllTags(posts);
+const maxCount = Math.max(...tags.map((t) => t.count), 1);
+---
+<BaseLayout title="标签" subtitle={`共 ${tags.length} 个标签`}>
+  <div class="container-prose py-12">
+    <div class="mb-10 text-center">
+      <h1 class="flex items-center justify-center gap-2 text-4xl font-bold font-serif">
+        <Icon name="tag" size={28} class="text-accent" /> 标签
+      </h1>
+      <div class="mx-auto mt-4 h-1 w-16 rounded-full bg-accent"></div>
+    </div>
+    <div class="flex flex-wrap justify-center gap-3">
+      {tags.map(({ tag, count }) => {
+        const size = 0.95 + (count / maxCount) * 0.9;
+        return (
+          <a
+            href={`/tags/${tag}/`}
+            class="rounded-full border border-black/10 bg-canvas-card px-4 py-2 font-medium shadow-sm transition-all hover:-translate-y-1 hover:border-accent hover:text-accent dark:border-white/10 dark:bg-canvas-dark-card"
+            style={`font-size:${size}rem`}
+          >
+            #{tag} <span class="ml-1 text-xs opacity-50">{count}</span>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</BaseLayout>
