@@ -34,7 +34,7 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&high
   </div>
 
   <!-- 底部柔和遮罩(让文字可读) -->
-  <div class="absolute inset-x-0 bottom-0 z-[3] h-1/2 bg-gradient-to-t from-[#2a1b3d]/70 via-[#2a1b3d]/20 to-transparent"></div>
+  <div class="absolute inset-x-0 bottom-0 z-[3] h-2/3 bg-gradient-to-t from-[#2a1b3d]/60 via-[#2a1b3d]/10 to-transparent"></div>
 
   <!-- 文字内容 -->
   <div class="relative z-[4] container-prose px-4 text-center text-white">
@@ -119,8 +119,11 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&high
   }
 
   .hero-char-img {
-    filter: drop-shadow(0 8px 40px rgba(0, 0, 0, 0.35));
+    filter: drop-shadow(0 4px 28px rgba(20, 8, 30, 0.18));
     animation: char-breathe 9s ease-in-out infinite;
+    /* 边缘羽化:让立绘与背景渐变融为一体,无明显矩形边界 */
+    -webkit-mask-image: radial-gradient(ellipse 78% 78% at 50% 48%, #000 55%, rgba(0,0,0,0.85) 72%, rgba(0,0,0,0) 100%);
+    mask-image: radial-gradient(ellipse 78% 78% at 50% 48%, #000 55%, rgba(0,0,0,0.85) 72%, rgba(0,0,0,0) 100%);
   }
   @keyframes char-breathe {
     0%, 100% { transform: scale(1); }
@@ -156,7 +159,7 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&high
       idx = (idx + 1) % imgs.length;
       imgs[idx]?.classList.remove('opacity-0');
       imgs[idx]?.classList.add('opacity-100');
-    }, 4000);
+    }, 6500);
   })();
 
   // ===== 符玄角色PV 弹窗 =====
