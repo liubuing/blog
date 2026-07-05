@@ -3,7 +3,7 @@ import { SITE } from '@/consts';
 import Icon from './Icon.astro';
 const images = SITE.heroImages;
 const pv = SITE.characterPV;
-const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&high_quality=1&autoplay=1&as_wide=1`;
+const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&page=1&high_quality=1&danmaku=1&as_wide=1&autoplay=1`;
 ---
 <section class="hero-section relative flex min-h-screen items-center justify-center overflow-hidden">
 
@@ -93,12 +93,14 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&high
         <iframe
           id="pv-iframe"
           class="absolute inset-0 h-full w-full"
-          src=""
+          src="about:blank"
+          data-src={pvEmbedUrl}
           title={pv.title}
           frameborder="0"
+          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
           allowfullscreen
           scrolling="no"
-          sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+          referrerpolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
       <p class="mt-3 text-center text-xs text-white/50">
@@ -183,7 +185,8 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&high
       modal.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
       // 仅在打开时设置 src,避免页面加载时即拉取 iframe
-      if (!iframe.src) iframe.src = pvEmbedUrl;
+      const src = iframe.getAttribute('data-src');
+      if (src && (iframe.src === '' || iframe.src === 'about:blank')) iframe.src = src;
       requestAnimationFrame(() => {
         backdrop?.classList.remove('opacity-0');
         panel?.classList.remove('translate-y-4', 'opacity-0');
@@ -192,8 +195,8 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&high
     const close = () => {
       backdrop?.classList.add('opacity-0');
       panel?.classList.add('translate-y-4', 'opacity-0');
-      // 清空 src 以停止播放
-      iframe.src = '';
+      // 重置到 about:blank 以停止播放(避免 B 站 player 持续在后台播放)
+      iframe.src = 'about:blank';
       setTimeout(() => {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
