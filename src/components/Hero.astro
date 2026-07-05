@@ -26,9 +26,13 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&high
       <img
         src={src}
         alt="符玄"
+        width={1600}
+        height={1600}
         class:list={["hero-char-img absolute inset-0 h-full w-full object-contain transition-opacity duration-[1200ms] ease-out", i === 0 ? "opacity-100" : "opacity-0"]}
         data-index={i}
         loading={i === 0 ? "eager" : "lazy"}
+        fetchpriority={i === 0 ? "high" : "low"}
+        decoding={i === 0 ? "auto" : "async"}
       />
     ))}
   </div>
@@ -150,8 +154,9 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&high
     if (!images || images.length <= 1) return;
     const imgs = document.querySelectorAll('.hero-char-img');
     if (!imgs.length) return;
-    // 预加载
-    images.forEach((u) => { const i = new Image(); i.src = u; });
+    // 仅预加载下一张,避免一次性拉全部图拖慢手机首屏
+    const preload = (i) => { const im = new Image(); im.src = images[i]; };
+    preload(1);
     let idx = 0;
     setInterval(() => {
       imgs[idx]?.classList.remove('opacity-100');
@@ -159,6 +164,8 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&high
       idx = (idx + 1) % imgs.length;
       imgs[idx]?.classList.remove('opacity-0');
       imgs[idx]?.classList.add('opacity-100');
+      // 提前预加载下一张
+      preload((idx + 1) % images.length);
     }, 6500);
   })();
 
