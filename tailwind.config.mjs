@@ -6,16 +6,16 @@ export default {
     extend: {
       colors: {
         accent: {
-          DEFAULT: '#77B6FF',
-          dark: '#4A90E2',
+          DEFAULT: '#FF8AB6',     // 符玄粉(浅色模式主色)
+          dark: '#E85A8C',        // 深粉(悬停/强调)
         },
         ink: {
-          light: '#2C2C3A',
+          light: '#4A2A45',       // 浅色模式文字:深紫粉,柔和不刺眼
           dark: '#E8E8F0',
         },
         canvas: {
-          light: '#F7F8FA',
-          card: '#FFFFFF',
+          light: '#FFF5F8',       // 浅色模式背景:极淡粉白
+          card: '#FFFFFF',        // 卡片纯白
           dark: '#1A1A2E',
           'dark-card': '#23233B',
           'dark-border': '#2F2F4A',
@@ -54,7 +54,7 @@ export default {
         DEFAULT: {
           css: {
             maxWidth: 'none',
-            a: { color: '#4A90E2', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } },
+            a: { color: '#E85A8C', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } },
           },
         },
       },

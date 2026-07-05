@@ -1,0 +1,160 @@
+---
+// 全站视觉特效:鼠标花瓣 + 拖尾光点 + 滚动入场 + 卡片倾斜
+---
+<div id="cursor-trail" class="pointer-events-none fixed inset-0 z-[100] overflow-hidden"></div>
+<canvas id="petal-canvas" class="pointer-events-none fixed inset-0 z-[100]"></canvas>
+
+<style>
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+
+<script>
+  // ===== 1. 鼠标拖尾光点 =====
+  const trailContainer = document.getElementById('cursor-trail');
+  const trailDots: HTMLSpanElement[] = [];
+  const TRAIL_LEN = 8;
+  if (trailContainer && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    for (let i = 0; i < TRAIL_LEN; i++) {
+      const dot = document.createElement('span');
+      const size = 8 - i * 0.7;
+      dot.style.cssText = `position:absolute;width:${size}px;height:${size}px;border-radius:50%;background:radial-gradient(circle,rgba(255,160,200,0.55),rgba(255,160,200,0));left:0;top:0;transition:transform 0.25s ease-out,opacity 0.3s;pointer-events:none;`;
+      trailContainer.appendChild(dot);
+      trailDots.push(dot);
+    }
+    let mx = 0, my = 0;
+    window.addEventListener('mousemove', (e) => {
+      mx = e.clientX; my = e.clientY;
+      trailDots.forEach((d, i) => {
+        const ratio = 1 - i / TRAIL_LEN;
+        d.style.transform = `translate(${mx - 4}px, ${my - 4}px) scale(${ratio})`;
+        d.style.opacity = String(ratio * 0.6);
+      });
+    });
+  }
+
+  // ===== 2. 点击涟波扩散 =====
+  const canvas = document.getElementById('petal-canvas') as HTMLCanvasElement | null;
+  if (canvas && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // 用 canvas 画涟波:多层同心圆环向外扩散,柔和消散
+    const ctx = canvas.getContext('2d')!;
+    const resize = () => { canvas.width = innerWidth; canvas.height = innerHeight; };
+    resize();
+    window.addEventListener('resize', resize);
+
+    type Ripple = { x: number; y: number; r: number; maxR: number; life: number; max: number; ringCount: number; gold: boolean };
+    const ripples: Ripple[] = [];
+
+    function spawn(x: number, y: number, count = 1) {
+      const gold = document.documentElement.classList.contains('dark');
+      for (let i = 0; i < count; i++) {
+        ripples.push({
+          x, y,
+          r: 0,
+          maxR: 70 + Math.random() * 40,
+          life: 0,
+          max: 120 + Math.random() * 40,
+          ringCount: 3,
+          gold,
+        });
+      }
+      if (ripples.length > 30) ripples.splice(0, ripples.length - 30);
+    }
+
+    function drawRipple(rp: Ripple) {
+      const t = rp.life / rp.max;
+      const alpha = (1 - t) * 0.5;
+      for (let k = 0; k < rp.ringCount; k++) {
+        const phase = t - k * 0.12;
+        if (phase <= 0 || phase >= 1) continue;
+        const r = rp.maxR * phase;
+        const a = alpha * (1 - k * 0.25);
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(rp.x, rp.y, r, 0, Math.PI * 2);
+        ctx.lineWidth = 2 - k * 0.4;
+        ctx.strokeStyle = rp.gold
+          ? `rgba(245, 215, 110, ${a})`     // 暗色:金
+          : `rgba(255, 138, 182, ${a})`;    // 浅色:粉
+        ctx.stroke();
+        // 内层柔光填充
+        if (k === 0) {
+          const g = ctx.createRadialGradient(rp.x, rp.y, 0, rp.x, rp.y, r);
+          if (rp.gold) {
+            g.addColorStop(0, `rgba(245, 215, 110, ${a * 0.25})`);
+            g.addColorStop(1, `rgba(245, 215, 110, 0)`);
+          } else {
+            g.addColorStop(0, `rgba(255, 160, 200, ${a * 0.25})`);
+            g.addColorStop(1, `rgba(255, 160, 200, 0)`);
+          }
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(rp.x, rp.y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const rp = ripples[i];
+        rp.life++;
+        if (rp.life >= rp.max) { ripples.splice(i, 1); continue; }
+        drawRipple(rp);
+      }
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    document.addEventListener('click', (e) => {
+      spawn(e.clientX, e.clientY, 1);
+    });
+  }
+
+  // ===== 3. 滚动入场动画 =====
+  const revealTargets = document.querySelectorAll<HTMLElement>(
+    'article.card, section > div > h2, .prose-article h1, .prose-article h2, .prose-article p, .prose-article ul, .prose-article blockquote, .prose-article pre, .prose-article table'
+  );
+  revealTargets.forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = `${Math.min(i * 40, 300)}ms`;
+  });
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          en.target.classList.add('is-visible');
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    revealTargets.forEach((el) => io.observe(el));
+  } else {
+    revealTargets.forEach((el) => el.classList.add('is-visible'));
+  }
+
+  // ===== 4. 卡片 3D 微倾斜 =====
+  document.querySelectorAll<HTMLElement>('article.card').forEach((card) => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `perspective(800px) rotateX(${-py * 4}deg) rotateY(${px * 4}deg) translateY(-4px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+</script>

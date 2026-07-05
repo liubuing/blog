@@ -3,6 +3,8 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ProgressBar from '../components/ProgressBar.astro';
+import VisualEffects from '../components/VisualEffects.astro';
+import AnimatedBackground from '../components/AnimatedBackground.astro';
 import Icon from '../components/Icon.astro';
 
 export interface Props {
@@ -19,6 +21,7 @@ const { title, description, image, hideHeader = false } = Astro.props;
     <BaseHead title={title} description={description} image={image} />
   </head>
   <body class="min-h-screen">
+    <AnimatedBackground />
     <ProgressBar />
     {!hideHeader && <Header />}
 
@@ -27,6 +30,8 @@ const { title, description, image, hideHeader = false } = Astro.props;
     </main>
 
     <Footer />
+
+    <VisualEffects />
 
     <a
       href="#top"

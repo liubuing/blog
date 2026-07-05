@@ -14,7 +14,8 @@
   }
 
   body {
-    @apply bg-canvas-light text-ink-light transition-colors duration-300;
+    @apply text-ink-light transition-colors duration-300;
+    background: transparent;
   }
 
   html.dark body {
