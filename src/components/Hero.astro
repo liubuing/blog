@@ -4,6 +4,15 @@ import Icon from './Icon.astro';
 const images = SITE.heroImages;
 const pv = SITE.characterPV;
 const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&page=1&high_quality=1&danmaku=1&as_wide=1&autoplay=1`;
+
+// 响应式图片:支持 -768w / -1200w / -2048w 后缀的图片自动生成多档
+const responsiveSrcset = (src) => {
+  const m = src.match(/^(.*)\.(\w+)$/);
+  if (!m) return null;
+  const [, base, ext] = m;
+  if (ext !== 'webp') return null;
+  return `${base}-768w.webp 768w, ${base}-1200w.webp 1200w, ${base}-2048w.webp 2048w`;
+};
 ---
 <section class="hero-section relative flex min-h-screen items-center justify-center overflow-hidden">
 
@@ -22,19 +31,21 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&page
 
   <!-- 符玄立绘层(居中 contain,不裁切) -->
   <div class="hero-character absolute inset-0 z-[2]">
-    {images.map((src, i) => (
-      <img
-        src={src}
-        alt="符玄"
-        width={1600}
-        height={1600}
-        class:list={["hero-char-img absolute inset-0 h-full w-full object-contain transition-opacity duration-[1200ms] ease-out", i === 0 ? "opacity-100" : "opacity-0"]}
-        data-index={i}
-        loading={i === 0 ? "eager" : "lazy"}
-        fetchpriority={i === 0 ? "high" : "low"}
-        decoding={i === 0 ? "auto" : "async"}
-      />
-    ))}
+    {images.map((src, i) => {
+      const srcset = responsiveSrcset(src);
+      return (
+        <img
+          src={src}
+          alt="符玄"
+          class:list={["hero-char-img absolute inset-0 h-full w-full object-contain transition-opacity duration-[1200ms] ease-out", i === 0 ? "opacity-100" : "opacity-0"]}
+          data-index={i}
+          loading={i === 0 ? "eager" : "lazy"}
+          fetchpriority={i === 0 ? "high" : "low"}
+          decoding={i === 0 ? "auto" : "async"}
+          {...(srcset ? { srcset, sizes: "80vw" } : {})}
+        />
+      );
+    })}
   </div>
 
   <!-- 底部柔和遮罩(让文字可读) -->
@@ -157,7 +168,10 @@ const pvEmbedUrl = `https://player.bilibili.com/player.html?bvid=${pv.bvid}&page
     const imgs = document.querySelectorAll('.hero-char-img');
     if (!imgs.length) return;
     // 仅预加载下一张,避免一次性拉全部图拖慢手机首屏
-    const preload = (i) => { const im = new Image(); im.src = images[i]; };
+    const preload = (i) => {
+      const im = new Image();
+      im.src = imgs[i]?.currentSrc || imgs[i]?.src || images[i];
+    };
     preload(1);
     let idx = 0;
     setInterval(() => {

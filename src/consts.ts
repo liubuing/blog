@@ -19,8 +19,8 @@ export const SITE = {
   // 图片下载至 public/images/,源自 upload-static.hoyoverse.com
   // 用于首页 Hero 轮播(居中 contain 展示,不裁切)
   heroImages: [
-    '/images/fuxuan-3.webp',
-    '/images/fuxuan-4.webp',
+    '/images/fuxuan-3-2048w.webp',
+    '/images/fuxuan-4-2048w.webp',
     '/images/HoYoWiki-image.jpg',
     '/images/HoYoWiki-image.png',
     '/images/HoYoWiki-image (2).png',
